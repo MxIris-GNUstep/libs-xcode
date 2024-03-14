@@ -11,37 +11,37 @@ An example property list is here:
 ```
 {
     target = "msvc";
+
     setupScript = "/home/gregc/Scripts/setup_env.sh";
+
     buildType = "parallel";
-    TargetName = {
-                additional = (
+
+    "# Comment" = "This target name maps to the above...";
+    msvc = {
+		additional = (
 			   "-lgdi32",
-			);   
-			copylibs = YES;
-			ignored = ( "VideoToolbox", "CoreMedia"
 		);
+		copylibs = YES;
+		ignored = ( "VideoToolbox", "CoreMedia" );
     }; 
         
-    headerPaths = (
-		"/home/gregc/headers"
-    );
+    headerPaths = (	"/home/gregc/headers" );
 
-    remappedSource = {
-		"ASourceFile.m" = "AlternateSourceFile.m";
-    };
+    remappedSource = { "ASourceFile.m" = "AlternateSourceFile.m"; };
 
     skippedTarget = ( "ASkippedTargetName" );
 
-	mapped = {
-	       "curl" = "-llibcurl";
-    };
+	mapped = { "curl" = "-llibcurl"; };
 
     ignored = ( "ssh2" );
 
-    linkerPaths = (
-	    "/c/src/vcpkg/installed/x64-windows/lib",	);
+    substitutions = { "-lSomeLibrary" = "-lSubtituteLib"; "-lAnotherLib" = ""; };
 
-	additionalCFlags = "-DSOME_DEFINE";
+    additional = ( "-lAdditionalLib" );
+
+    linkerPaths = ( "/c/src/vcpkg/installed/x64-windows/lib" );
+
+    additionalCFlags = "-DSOME_DEFINE";
 }
 ```
 
@@ -70,6 +70,10 @@ The property list contains the following elements, many of which are fairely sel
 * ```linkerPaths``` = An array of additional paths to check when linking.  This adds -L directives to the compiler invocation.
 
 * ```additionalCFlags``` = A string that contains any additional C flags that need to be added.
+
+* ```substitutions``` = An dictionary containing mappings of a library to a given library on your architecture.  Mapping a library to "" is equivalent to adding it to the ```ignored``` array.
+
+* ```additional``` = An array containing more libraries to be added
 
 ### Planned for the future:
 
