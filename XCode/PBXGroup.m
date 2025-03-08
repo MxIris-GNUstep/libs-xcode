@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -20,19 +20,31 @@
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110 USA.
-*/ #import "PBXCommon.h"
+*/
+
+#import "PBXCommon.h"
 #import "PBXGroup.h"
 
 @implementation PBXGroup
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      [self setSourceTree: @"<group>"]; // default value
+    }
+  return self;
+}
+
 - (void) dealloc
 {
-  RELEASE(sourceTree);
-  RELEASE(children);
-  RELEASE(name);
-  RELEASE(tabWidth);
-  RELEASE(usesTabs);
-  RELEASE(path);
+  RELEASE(_sourceTree);
+  RELEASE(_children);
+  RELEASE(_name);
+  RELEASE(_tabWidth);
+  RELEASE(_usesTabs);
+  RELEASE(_path);
 
   [super dealloc];
 }
@@ -40,42 +52,48 @@
 // Methods....
 - (NSString *) sourceTree // getter
 {
-  return sourceTree;
+  return _sourceTree;
 }
 
 - (void) setSourceTree: (NSString *)object; // setter
 {
-  ASSIGN(sourceTree,object);
+  ASSIGN(_sourceTree, object);
 }
 
 - (NSMutableArray *) children // getter
 {
-  return children;
+  return _children;
 }
 
 - (void) setChildren: (NSMutableArray *)object; // setter
 {
-  ASSIGN(children,object);
+  ASSIGN(_children, object);
 }
 
 - (NSString *) name // getter
 {
-  return name;
+  return _name;
 }
 
 - (void) setName: (NSString *)object; // setter
 {
-  ASSIGN(name,object);
+  ASSIGN(_name, object);
 }
 
 - (NSString *) path // getter
 {
-  return path;
+  return _path;
 }
 
 - (void) setPath: (NSString *)object; // setter
 {
-  ASSIGN(path,object);
+  ASSIGN(_path, object);
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@ - name = %@, path = %@>",
+		   [super description], _name, _path];
 }
 
 @end

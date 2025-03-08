@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -29,6 +29,8 @@
 #import "XCConfigurationList.h"
 #import "PBXFileReference.h"
 #import "GSXCBuildContext.h"
+#import "PBXBuildFile.h"
+#import "PBXFileSystemSynchronizedRootGroup.h"
 
 @class PBXProject, GSXCBuildDatabase;
 
@@ -39,12 +41,21 @@
   NSString *_productName;
   NSMutableArray *_buildPhases;
   NSString *_name;
-
+  NSString *_productType;
+  NSMutableArray *_fileSystemSynchronizedGroups;
+  NSMutableArray *_packageProductDepedencies;
+  
   PBXProject *_project;
   GSXCBuildDatabase *_database;
 }
 
 // Methods....
+- (NSMutableArray *) fileSystemSynchronizedGroups;
+- (void) setFileSystemSynchronizedGroups: (NSMutableArray *)object;
+
+- (NSMutableArray *) packageProductDependencies;
+- (void) setPackageProductDependencies: (NSMutableArray *)object;
+
 - (NSMutableArray *) dependencies; // getter
 - (void) setDependencies: (NSMutableArray *)object; // setter
 
@@ -65,6 +76,14 @@
 
 - (GSXCBuildDatabase *) database;
 - (void) setDatabase: (GSXCBuildDatabase *)db;
+
+- (NSString *) productType; // getter
+- (void) setProductType: (NSString *)object; // setter
+
+// Utility methods...
+- (NSArray *) synchronizedSources;
+- (NSArray *) synchronizedHeaders;
+- (NSArray *) synchronizedResources;
 
 // build
 - (BOOL) build;

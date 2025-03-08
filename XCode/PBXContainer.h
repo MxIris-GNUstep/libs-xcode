@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -22,16 +22,19 @@
    Boston, MA 02110 USA.
 */
 
+#ifndef __PBXContainer_h_GNUSTEP_INCLUDE
+#define __PBXContainer_h_GNUSTEP_INCLUDE
+
 #import <Foundation/Foundation.h>
 #import "PBXCoder.h"
 
 @interface PBXContainer : NSObject
 {
-  NSString *archiveVersion;
-  NSMutableDictionary *classes;
-  NSString *objectVersion;
-  NSMutableDictionary *objects;
-  id rootObject;
+  NSString *_archiveVersion;
+  NSMutableDictionary *_classes;
+  NSString *_objectVersion;
+  NSMutableDictionary *_objects;
+  id _rootObject;
 
   NSString *_filename;
   NSString *_parameter;
@@ -39,6 +42,8 @@
   NSString *_workspaceLibs;
   NSString *_workspaceIncludes;
 }
+
+- (instancetype) initWithRootObject: (id)object;
 
 - (void) setWorkspaceIncludes: (NSString *)i;
 - (NSString *) workspaceIncludes;
@@ -76,5 +81,8 @@
 - (BOOL) install;
 - (BOOL) generate;
 - (BOOL) link;
+- (BOOL) save;
 
 @end
+
+#endif

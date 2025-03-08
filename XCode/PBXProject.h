@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -21,6 +21,9 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110 USA.
 */
+
+#ifndef __PBXProject_h_GNUSTEP_INCLUDE
+#define __PBXProject_h_GNUSTEP_INCLUDE
 
 #import <Foundation/Foundation.h>
 
@@ -51,34 +54,56 @@
 
   NSString *_filename;
   NSMutableArray *_arrangedTargets;
+  BOOL _minimizedProjectReferenceProxies;
+  NSString *_preferredProjectObjectVersion;
 }
 
 // Methods....
+- (BOOL) minimizedProjectReferenceProxies; // getter
+- (void) setMinimizedProjectReferenceProxies: (BOOL)flag; // setter
+
+- (NSString *) preferredProjectObjectVersion; // getter
+- (void) setPreferredProjectObjectVersion: (NSString *)object; // setter
+
 - (NSString *) developmentRegion; // getter
 - (void) setDevelopmentRegion: (NSString *)object; // setter
+
 - (NSMutableArray *) knownRegions; // getter
 - (void) setKnownRegions: (NSMutableArray *)object; // setter
+
 - (NSString *) compatibilityVersion; // getter
 - (void) setCompatibilityVersion: (NSString *)object; // setter
+
 - (NSMutableArray *) projectReferences; // getter
 - (void) setProjectReferences: (NSMutableArray *)object; // setter
+
 - (NSMutableArray *) targets; // getter
 - (void) setTargets: (NSMutableArray *)object; // setter
+
 - (NSString *) projectDirPath; // getter
 - (void) setProjectDirPath: (NSString *)object; // setter
+
 - (NSString *) projectRoot; // getter
 - (void) setProjectRoot: (NSString *)object; // setter
+
 - (XCConfigurationList *) buildConfigurationList; // getter
 - (void) setBuildConfigurationList: (XCConfigurationList *)object; // setter
+
 - (PBXGroup *) mainGroup; // getter
 - (void) setMainGroup: (PBXGroup *)object; // setter
+
 - (NSString *) hasScannedForEncodings; // getter
 - (void) setHasScannedForEncodings: (NSString *)object; // setter
+
 - (PBXGroup *) productRefGroup; // getter
 - (void) setProductRefGroup: (PBXGroup *)object; // setter
+
 - (PBXContainer *) container;
 - (void) setContainer: (PBXContainer *)container;
+
 - (void) setContext: (NSDictionary *)ctx;
+- (NSDictionary *) context;
+
 - (void) setFilename: (NSString *)fn;
 - (NSString *) filename;
 
@@ -90,4 +115,7 @@
 - (BOOL) clean;
 - (BOOL) install;
 - (BOOL) generate;
+- (BOOL) save;
 @end
+
+#endif

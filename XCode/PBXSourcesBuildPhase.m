@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -85,9 +85,13 @@
       
       xcprintf("\t* Parallel build using %ld CPUs...\n", _cpus);
     }
+
+  NSArray *synchronizedFiles = [_target synchronizedSources];
+  files = [files arrayByAddingObjectsFromArray: synchronizedFiles];
+  // NSLog(@"files = %@", files);
   
   // if the database is present use it's list of files...
-  if (db != nil)
+  if (db != nil && [synchronizedFiles count] == 0)
     {
       if ([db isEmpty])
 	{
@@ -96,6 +100,10 @@
 	}
       
       files = [db files];
+    }
+  else
+    {
+      xcputs([[NSString stringWithFormat: @"%s+++ Using synchronized group...%s", YELLOW, RESET] cString]);      
     }
     
   en = [files objectEnumerator];                         
@@ -162,11 +170,15 @@
   PBXBuildFile *file = nil;
   BOOL result = YES;
   NSString *buildDir = @"./build";
-  NSEnumerator *en = [_files objectEnumerator];
+  NSEnumerator *en = nil; // [_files objectEnumerator];
   NSFileManager *mgr = [NSFileManager defaultManager];
 
   buildDir = [buildDir stringByAppendingPathComponent: [_target name]];
 
+  NSArray *synchronizedFiles = [_target synchronizedSources];
+  NSArray *files = [_files arrayByAddingObjectsFromArray: synchronizedFiles];
+  en = [files objectEnumerator];
+  
   xcputs("=== Executing Sources Build Phase (LINK)");
   while((file = [en nextObject]) != nil && result)
     {

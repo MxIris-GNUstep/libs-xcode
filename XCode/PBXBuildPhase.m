@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -26,6 +26,24 @@
 #import "PBXBuildPhase.h"
 
 @implementation PBXBuildPhase
+
+- (instancetype) initWithFiles: (NSMutableArray *)files
+	       buildActionMask: (NSString *)buildActionMask
+	  runOnlyForDeployment: (NSString *)runOnlyForDeployment
+			target: (PBXNativeTarget *)target
+			  name: (NSString *)name
+{
+  self = [super init];
+  if (self != nil)
+    {
+      [self setFiles: files];
+      [self setBuildActionMask: buildActionMask];
+      [self setRunOnlyForDeploymentPostprocessing: runOnlyForDeployment];
+      [self setTarget: target];
+      [self setName: name];
+    }
+  return self;
+}
 
 - (void) dealloc
 {
@@ -73,7 +91,7 @@
   return _showEnvVarsInLog;
 }
 
-- (void) setEnvVarsInLog: (BOOL)flag
+- (void) setShowEnvVarsInLog: (BOOL)flag
 {
   _showEnvVarsInLog = flag;
 }

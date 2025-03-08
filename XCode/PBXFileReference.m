@@ -45,6 +45,137 @@ static NSLock *lock = nil;
   lock = [[NSLock alloc] init];
 }
 
++ (NSString *) fileTypeFromPath: (NSString *)path
+{
+  NSString *result = @"compiled.mach-o.executable";
+  NSString *ext = [path pathExtension];
+
+  if ([ext isEqualToString: @"m"])
+    {
+      result = @"sourcecode.c.objc";
+    }
+  else if ([ext isEqualToString: @"c"])
+    {
+      result = @"sourcecode.c.c";
+    }
+  else if ([ext isEqualToString: @"cc"]
+	   || [ext isEqualToString: @"cpp"]
+	   || [ext isEqualToString: @"C"]
+	   || [ext isEqualToString: @"cxx"])
+    {
+      result = @"sourcecode.cpp.cpp";
+    }
+  else if ([ext isEqualToString: @"mm"])
+    {
+      result = @"sourcecode.cpp.objcpp";
+    }
+  else if ([ext isEqualToString: @"lex.yy"])
+    {
+      result = @"sourcecode.lex";
+    }
+  else if ([ext isEqualToString: @"yy.tab"])
+    {
+      result = @"sourcecode.yacc";
+    }
+  else if ([ext isEqualToString: @"app"])
+    {
+      result = @"file.xib";
+    }
+  else if ([ext isEqualToString: @"nib"])
+    {
+      result = @"file.nib";
+    }
+  else if ([ext isEqualToString: @"gorm"])
+    {
+      result = @"file.gorm"; // GS specific
+    }
+  else if ([ext isEqualToString: @"entitlements"])
+    {
+      result = @"text.plist.entitlements";
+    }
+	   
+  return result;
+}
+
++ (NSString *) extForFileType: (NSString *)type
+{
+  NSString *result = @"";
+
+  if ([type isEqualToString: @"sourcecode.c.objc"])
+    {
+      result = @"m";
+    }
+  else if ([type isEqualToString: @"sourcecode.c.c"])
+    {
+      result = @"c";
+    }
+  else if ([type isEqualToString: @"sourcecode.cpp.cpp"])
+    {
+      result = @"cc";
+    }
+  else if ([type isEqualToString: @"sourcecode.cpp.objcpp"])
+    {
+      result = @"mm";
+    }
+  else if ([type isEqualToString: @"sourcecode.lex"])
+    {
+      result = @"lex.yy";
+    }
+  else if ([type isEqualToString: @"sourcecode.yacc"])
+    {
+      result = @"yy.tab";
+    }
+  else if ([type isEqualToString: @"wrapper.application"])
+    {
+      result = @"app";
+    }
+  else if ([type isEqualToString: @"file.xib"])
+    {
+      result = @"xib";
+    }
+  else if ([type isEqualToString: @"file.nib"])
+    {
+      result = @"nib";
+    }
+  else if ([type isEqualToString: @"file.gorm"])
+    {
+      result = @"gorm";
+    }
+  else if ([type isEqualToString: @"text.plist.entitlements"])
+    {
+      result = @"entitlements";
+    }
+
+  return result;
+}
+
+- (instancetype) initWithPath: (NSString *)path
+{
+  self = [super init];
+  if (self != nil)
+    {
+      NSString *fileType = [PBXFileReference fileTypeFromPath: [path lastPathComponent]];
+
+      if ([fileType isEqualToString: @"compiled.mach-o.executable"])
+	{
+	  [self setIncludeInIndex: @"0"];
+	}
+
+      if ([fileType isEqualToString: @"wrapper.application"])
+	{
+	  [self setExplicitFileType: fileType];
+	}
+      else
+	{
+      	  [self setLastKnownFileType: fileType];
+	}
+
+      ASSIGN(_path, path);
+      [self setSourceTree: @"<group>"];
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_sourceTree);
@@ -176,6 +307,16 @@ static NSLock *lock = nil;
   _target = t;
 }
 
+- (NSString *) includeInIndex
+{
+  return _includeInIndex;
+}
+
+- (void) setIncludeInIndex: (NSString *)includeInIndex
+{
+  ASSIGN(_includeInIndex, includeInIndex);
+}
+
 - (NSString *) _resolvePathFor: (id)object 
                      withGroup: (PBXGroup *)group
                          found: (BOOL *)found
@@ -186,7 +327,7 @@ static NSLock *lock = nil;
   id file = nil;
   while((file = [en nextObject]) != nil && *found == NO)
     {
-      if(file == self) // have we found ourselves??
+      if([[file path] isEqualToString: [self path]]) // have we found ourselves??
 	{
 	  NSString *filePath = ([file path] == nil)?@"":[file path];
 	  result = filePath;
@@ -582,9 +723,6 @@ static NSLock *lock = nil;
       [lock lock];
       NSString *outputPath = [buildDir stringByAppendingPathComponent: 
 				    [fileName stringByAppendingString: @".o"]];
-      //outputFiles = [outputFiles copy];
-      //outputFiles = [[outputFiles stringByAppendingString: [NSString stringWithFormat: @"'%@'",outputPath]] 
-      //	      stringByAppendingString: @" "];
       [lock unlock];
 
       NSString *objCflags = @"";
@@ -621,8 +759,10 @@ static NSLock *lock = nil;
       if ([usePCHFlag isEqualToString: @"YES"])
 	{
 	  NSString *pchFile = [bs objectForKey: @"GCC_PREFIX_HEADER"];
-	  
-	  buildTemplate = [buildTemplate stringByAppendingString: [NSString stringWithFormat: @" -include %@", pchFile]];
+	  if (![pchFile isEqualToString: @""] && pchFile != nil)
+	    {
+	      buildTemplate = [buildTemplate stringByAppendingString: [NSString stringWithFormat: @" -include %@", pchFile]];
+	    }
 	}
 
       NSString *compilePath = bp;
@@ -772,7 +912,7 @@ static NSLock *lock = nil;
   NSMutableArray *objcFiles = [self _arrayForKey: @"OBJC_FILES"];
   NSMutableArray *cFiles = [self _arrayForKey: @"C_FILES"];
   NSMutableArray *cppFiles = [self _arrayForKey: @"CPP_FILES"];
-  NSMutableArray *hFiles = [self _arrayForKey: @"HEADERS"];
+  // NSMutableArray *hFiles = [self _arrayForKey: @"HEADERS"];
   NSMutableArray *objcppFiles = [self _arrayForKey: @"OBJCPP_FILES"];
   NSMutableArray *addlIncDirs = [self _arrayForKey: @"ADDITIONAL_INCLUDE_DIRS"];
   NSString *of = [context objectForKey: @"OUTPUT_FILES"];
@@ -797,7 +937,7 @@ static NSLock *lock = nil;
                             [self buildPath]];
 
 
-  NSArray *localHeaderPathsArray = [self _allSubdirsAtPath:@"."];
+  NSArray *localHeaderPathsArray = [self _allSubdirsAtPath: @"."];
   NSString *buildDir = [NSString stringForEnvironmentVariable: @"TARGET_BUILD_DIR" defaultValue: @"build"];
   buildDir = [buildDir stringByAppendingPathComponent: [self productName]];
   NSString *additionalHeaderDirs = [context objectForKey:@"INCLUDE_DIRS"];
@@ -810,11 +950,13 @@ static NSLock *lock = nil;
 
   NSDebugLog(@"localHeaderPathsArray = %@, %@", localHeaderPathsArray, localHeaderPaths);
   NSDebugLog(@"Build path = %@, %@", [self buildPath], [[self buildPath] stringByDeletingFirstPathComponent]);
+
   // blank these out if they are not used...
   if(headerSearchPaths == nil)
     {
       headerSearchPaths = @"";
     }
+  
   if(localHeaderPaths == nil)
     {
       localHeaderPaths = @"";

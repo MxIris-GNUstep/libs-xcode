@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -39,11 +39,34 @@
   RELEASE(_buildPhases);
   RELEASE(_name);
   RELEASE(_project);
-
+  RELEASE(_productType);
+  RELEASE(_fileSystemSynchronizedGroups);
+  RELEASE(_packageProductDepedencies);
+  
   [super dealloc];
 }
 
 // Methods....
+- (NSMutableArray *) fileSystemSynchronizedGroups
+{
+  return _fileSystemSynchronizedGroups;
+}
+
+- (void) setFileSystemSynchronizedGroups: (NSMutableArray *)object
+{
+  ASSIGN(_fileSystemSynchronizedGroups, object);
+}
+
+- (NSMutableArray *) packageProductDependencies
+{
+  return _packageProductDepedencies;
+}
+
+- (void) setPackageProductDependencies: (NSMutableArray *)object
+{
+  ASSIGN(_packageProductDepedencies, object);
+}
+
 - (PBXProject *) project
 {
   return _project;
@@ -114,6 +137,105 @@
 - (GSXCBuildDatabase *) database
 {
   return _database;
+}
+
+- (NSString *) productType // getter
+{
+  return _productType;
+}
+
+- (void) setProductType: (NSString *)object; // setter
+{
+  ASSIGN(_productType,object);
+}
+
+- (NSArray *) synchronizedSources
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *gen = [_fileSystemSynchronizedGroups objectEnumerator];
+  PBXFileSystemSynchronizedRootGroup *group = nil;
+
+  while ((group = [gen nextObject]) != nil)
+    {
+      NSArray *children = [group children];
+      NSEnumerator *cen = [children objectEnumerator];
+      PBXBuildFile *buildFile = nil;
+
+      while ((buildFile = [cen nextObject]) != nil)
+	{
+	  PBXFileReference *fr = [buildFile fileRef];
+	  NSString *name = [fr path];
+
+	  // NSLog(@"path = %@", name);
+	  if ([[name pathExtension] isEqualToString: @"m"]
+	      || [[name pathExtension] isEqualToString: @"mm"]
+	      || [[name pathExtension] isEqualToString: @"M"]
+	      || [[name pathExtension] isEqualToString: @"c"]
+	      || [[name pathExtension] isEqualToString: @"cc"]
+	      || [[name pathExtension] isEqualToString: @"C"]
+	      || [[name pathExtension] isEqualToString: @"swift"])
+	    {
+	      [result addObject: buildFile];
+	    }
+	}
+    }
+  
+  return result;
+}
+
+- (NSArray *) synchronizedHeaders
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *gen = [_fileSystemSynchronizedGroups objectEnumerator];
+  PBXFileSystemSynchronizedRootGroup *group = nil;
+
+  while ((group = [gen nextObject]) != nil)
+    {
+      NSArray *children = [group children];
+      NSEnumerator *cen = [children objectEnumerator];
+      PBXBuildFile *buildFile = nil;
+
+      while ((buildFile = [cen nextObject]) != nil)
+	{
+	  PBXFileReference *fr = [buildFile fileRef];
+	  NSString *name = [fr path];
+
+	  if ([[name pathExtension] isEqualToString: @"h"])
+	    {
+	      [result addObject: buildFile];
+	    }
+	}
+    }
+  
+  return result;  
+}
+
+- (NSArray *) synchronizedResources
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *gen = [_fileSystemSynchronizedGroups objectEnumerator];
+  PBXFileSystemSynchronizedRootGroup *group = nil;
+
+  while ((group = [gen nextObject]) != nil)
+    {
+      NSArray *children = [group children];
+      NSEnumerator *cen = [children objectEnumerator];
+      PBXBuildFile *buildFile = nil;
+
+      while ((buildFile = [cen nextObject]) != nil)
+	{
+	  PBXFileReference *fr = [buildFile fileRef];
+	  NSString *name = [fr path];
+
+	  if ([[name pathExtension] isEqualToString: @"xcassets"]
+	      || [[name pathExtension] isEqualToString: @"xib"])
+	    {
+	      [result addObject: buildFile];
+	    }
+	}
+    }
+  
+  return result;
 }
 
 - (BOOL) build

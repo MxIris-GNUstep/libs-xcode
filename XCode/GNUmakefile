@@ -48,6 +48,7 @@ PBXCopyFilesBuildPhase.h \
 PBXFileReference.h \
 PBXFrameworksBuildPhase.h \
 PBXFrameworkTarget.h \
+PBXFileSystemSynchronizedRootGroup.h \
 PBXGroup.h \
 PBXHeadersBuildPhase.h \
 PBXNativeTarget.h \
@@ -70,6 +71,8 @@ PBXLegacyTarget.h \
 GSXCBuildOperation.h \
 GSXCBuildDelegate.h \
 GSXCGenerator.h \
+NSObject+KeyExtraction.h \
+XCode.h \
 
 #
 # Class files
@@ -92,6 +95,7 @@ PBXContainerItemProxy.m \
 PBXContainer.m \
 PBXCopyFilesBuildPhase.m \
 PBXFileReference.m \
+PBXFileSystemSynchronizedRootGroup.m \
 PBXFrameworksBuildPhase.m \
 PBXFrameworkTarget.m \
 PBXGroup.m \
@@ -116,6 +120,7 @@ PBXLegacyTarget.m \
 GSXCBuildOperation.m \
 GSXCGenerator.m \
 xcsystem.m \
+NSObject+KeyExtraction.m \
 
 #
 # Makefiles

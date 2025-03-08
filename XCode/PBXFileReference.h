@@ -22,6 +22,9 @@
    Boston, MA 02110 USA.
 */
 
+#ifndef __PBXFileReference_h_GNUSTEP_INCLUDE
+#define __PBXFileReference_h_GNUSTEP_INCLUDE
+
 #import <Foundation/Foundation.h>
 
 // Local includes
@@ -52,6 +55,10 @@
   NSUInteger _currentFile;
 }
 
++ (NSString *) fileTypeFromPath: (NSString *)path;
++ (NSString *) extForFileType: (NSString *)type;
+- (instancetype) initWithPath: (NSString *)path;
+
 - (void) setTotalFiles: (NSUInteger)t;
 - (void) setCurrentFile: (NSUInteger)n;
 
@@ -74,7 +81,8 @@
 - (void) setLineEnding: (NSString *)object;
 - (void) setTarget: (PBXNativeTarget *)t;
 - (void) setWrapsLines: (NSString *)o;
-
+- (NSString *) includeInIndex;
+- (void) setIncludeInIndex: (NSString *)includeInIndex;
 - (NSString *) productName;
 
 // Build methods...
@@ -83,3 +91,5 @@
 - (BOOL) generate;
 
 @end
+
+#endif

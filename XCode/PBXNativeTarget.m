@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2018, 2019, 2020, 2021 Free Software Foundation, Inc.
 
-   Written by: Gregory John Casament <greg.casamento@gmail.com>
+   Written by: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2022
    
    This file is part of the GNUstep XCode Library
@@ -44,7 +44,6 @@
 {
   RELEASE(_productReference);
   RELEASE(_productInstallPath);
-  RELEASE(_productType);
   RELEASE(_buildRules);
   RELEASE(_comments);
   RELEASE(_productSettingsXML);
@@ -71,16 +70,6 @@
 - (void) setProductInstallPath: (NSString *)object; // setter
 {
   ASSIGN(_productInstallPath,object);
-}
-
-- (NSString *) productType // getter
-{
-  return _productType;
-}
-
-- (void) setProductType: (NSString *)object; // setter
-{
-  ASSIGN(_productType,object);
 }
 
 - (NSMutableArray *) buildRules // getter
